@@ -4,7 +4,8 @@ import AddToCartButton from "@/components/AddToCartButton";
 import { notFound } from "next/navigation";
 
 export default function ProductDetail({ params }: { params: { slug: string } }) {
-  const product = getProductBySlug(params.slug);
+  const { slug } = params;
+  const product = getProductBySlug(slug);
   if (!product) return notFound();
 
   return (

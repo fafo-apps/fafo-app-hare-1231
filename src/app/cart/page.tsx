@@ -3,21 +3,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { clearCart, getCart, removeFromCart, updateQuantity } from "@/lib/cart";
 import { products } from "@/data/products";
+import type { Product } from "@/data/products";
 import { formatPrice } from "@/lib/money";
 
-export default function CartPage() {
-  const [items, setItems] = useState<{ productId: string; quantity: number }[]>([]);
+type CartItem = { productId: string; quantity: number };
+type DetailedCartItem = CartItem & { product: Product };
 
-  const detailed = useMemo(() => {
-    return items
-      .map((i) => ({
-        ...i,
-        product: products.find((p) => p.id === i.productId),
-      }))
-      .filter((x) => Boolean(x.product));
+export default function CartPage() {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  const detailed = useMemo<DetailedCartItem[]>(() => {
+    const withMaybeProduct = items.map((i) => ({
+      ...i,
+      product: products.find((p) => p.id === i.productId),
+    }));
+    const isDetailed = (x: CartItem & { product?: Product }): x is DetailedCartItem => Boolean(x.product);
+    return withMaybeProduct.filter(isDetailed);
   }, [items]);
 
-  const subtotal = detailed.reduce((sum, i: any) => sum + i.quantity * i.product.priceCents, 0);
+  const subtotal = detailed.reduce((sum, i) => sum + i.quantity * i.product.priceCents, 0);
   const currency = detailed[0]?.product?.currency ?? "USD";
 
   useEffect(() => {
@@ -41,7 +45,7 @@ export default function CartPage() {
       {hasItems && (
         <div className="grid gap-10 md:grid-cols-[1fr_320px]">
           <div className="space-y-6">
-            {detailed.map((line: any) => (
+            {detailed.map((line) => (
               <div key={line.productId} className="flex items-start gap-4">
                 <div className="w-28 h-36 rounded-md bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900" />
                 <div className="flex-1">

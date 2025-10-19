@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 export default function ProductDetail({ params }: { params: { slug: string } }) {
   const { slug } = params;
   const product = getProductBySlug(slug);
-  if (!product) return notFound();
+  if (!product) notFound();
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 grid gap-10 md:grid-cols-2">

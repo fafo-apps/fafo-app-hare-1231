@@ -3,8 +3,10 @@ import { formatPrice } from "@/lib/money";
 import AddToCartButton from "@/components/AddToCartButton";
 import { notFound } from "next/navigation";
 
-export default function ProductDetail({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+type Params = { slug: string };
+
+export default async function ProductDetail({ params }: { params: Promise<Params> }) {
+  const { slug } = await params;
   const product = getProductBySlug(slug);
   if (!product) notFound();
 
